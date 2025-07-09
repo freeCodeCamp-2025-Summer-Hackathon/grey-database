@@ -45,6 +45,6 @@ def login():
         return {'message': 'Logged in successfully'}, 200
     return {'error': 'Invalid credentials'}, 401
 
-@bp.route("/reset")
-def resetUserCredtentials():
-    return "User registered"
+# @bp.route("/reset")
+# def resetUserCredtentials():
+#     return "User registered"
