@@ -1,10 +1,10 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, session
 from jobapp.models import User
 
 bp = Blueprint('UserAuth', __name__)
 
 @bp.route("/register", methods=['post'])
-def registerUser():
+def register():
     """
     API to register user for the app
     ---
@@ -36,9 +36,14 @@ def registerUser():
     user.save()
     return {'message': 'User registered successfully'}, 201
 
-@bp.route("/login")
-def loginUser():
-    return "User logged in"
+@bp.route("/login", methods=["POST",])
+def login():
+    data = request.get_json()
+    user = User.objects(username=data.get('username'), password=data.get('password')).first()
+    if user:
+        session['username'] = user.username
+        return {'message': 'Logged in successfully'}, 200
+    return {'error': 'Invalid credentials'}, 401
 
 @bp.route("/reset")
 def resetUserCredtentials():
