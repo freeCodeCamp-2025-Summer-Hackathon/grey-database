@@ -9,4 +9,6 @@ class Config:
     MONGODB_SETTINGS = {
         "host": os.getenv("MONGODB_URI"),
     }
+    if FLASK_ENV == 'dev':
+        SECRET_KEY = 'secret'
 
