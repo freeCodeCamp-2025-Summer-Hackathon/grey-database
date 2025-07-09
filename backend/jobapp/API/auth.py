@@ -1,9 +1,9 @@
-from flask import Blueprint
-from jobapp.Models.User import User
+from flask import Blueprint, request
+from jobapp.models import User
 
 bp = Blueprint('UserAuth', __name__)
 
-@bp.route("/register", methods=['post'])
+@bp.route("/register", methods=['get', 'post'])
 def registerUser():
     """
     API to register user for the app
@@ -25,9 +25,16 @@ def registerUser():
       401:
         description: Unauthorized
     """
+    # data = request.get_json()
+    # if not data or not data.get('username') or not data.get('password'):
+    #     return {'error': 'Username and password required'}, 400
+    
+    # if User.objects(username=data['username']):
+    #     return {'error': 'Username already exists'}, 400
+
     user = User()
-    user.username = 'grey_test1@yopmail.com'
-    user.password = 'greypass1'
+    user.username = 'grey_test3@yopmail.com'
+    user.password = 'greypass3'
     user.save()
     return "User registered"
 
