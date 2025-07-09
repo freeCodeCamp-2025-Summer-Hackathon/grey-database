@@ -3,7 +3,7 @@ from jobapp.models import User
 
 bp = Blueprint('UserAuth', __name__)
 
-@bp.route("/register", methods=['get', 'post'])
+@bp.route("/register", methods=['post'])
 def registerUser():
     """
     API to register user for the app
@@ -25,18 +25,16 @@ def registerUser():
       401:
         description: Unauthorized
     """
-    # data = request.get_json()
-    # if not data or not data.get('username') or not data.get('password'):
-    #     return {'error': 'Username and password required'}, 400
+    data = request.get_json()
+    if not data or not data.get('username') or not data.get('password'):
+        return {'error': 'Username and password required'}, 400
     
-    # if User.objects(username=data['username']):
-    #     return {'error': 'Username already exists'}, 400
+    if User.objects(username=data['username']):
+        return {'error': 'Username already exists'}, 400
 
-    user = User()
-    user.username = 'grey_test3@yopmail.com'
-    user.password = 'greypass3'
+    user = User(username=data['username'], password=data['password'])
     user.save()
-    return "User registered"
+    return {'message': 'User registered successfully'}, 201
 
 @bp.route("/login")
 def loginUser():
