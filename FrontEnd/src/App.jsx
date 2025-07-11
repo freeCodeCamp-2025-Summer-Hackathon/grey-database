@@ -1,8 +1,9 @@
-import React from 'react'
+import React from 'react';
+import Login from './Login.jsx';
 
 function App() {
   return (
-    <div>frontEnd setUp with react using vite</div>
+    <div><Login /></div>
   )
 }
 
