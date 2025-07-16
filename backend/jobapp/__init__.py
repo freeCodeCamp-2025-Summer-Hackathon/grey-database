@@ -20,7 +20,8 @@ def create_app():
     connect(host = app.config['MONGODB_SETTINGS'].get('host'))
 
     # Initialize Swagger
-    Swagger(app)
+    if os.getenv("FLASK_ENV") == 'dev':
+        Swagger(app)
 
     # cors
     CORS(app)
