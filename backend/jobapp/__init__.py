@@ -20,14 +20,17 @@ def create_app():
     connect(host = app.config['MONGODB_SETTINGS'].get('host'))
 
     # Initialize Swagger
-    Swagger(app)
+    if os.getenv("FLASK_ENV") == 'dev':
+        Swagger(app)
 
     # cors
     CORS(app)
 
     from .API import main
     from .API import auth
+    from .API import application
 
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
+    app.register_blueprint(application.bp, url_prefix="/application")
     return app
