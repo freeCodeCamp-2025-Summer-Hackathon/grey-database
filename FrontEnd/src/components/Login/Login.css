@@ -66,5 +66,9 @@ input[type="email"],input[type="password"]{
     font-size:18px;
     border-radius:8px;
     margin-top: 18px;
+    cursor:pointer;
 }
 
+.continue-button:hover{
+    background-color:#0A52C1;
+}
