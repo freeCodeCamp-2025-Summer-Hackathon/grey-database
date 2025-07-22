@@ -38,6 +38,6 @@ def create_app():
     app.register_blueprint(application.bp, url_prefix="/application")
     app.register_blueprint(note.bp, url_prefix='/application')
     app.register_blueprint(contact.bp, url_prefix='/applications')
-    # app.register_blueprint(followup.bp, url_prefix='/applications')
+    app.register_blueprint(followup.bp, url_prefix='/applications')
 
     return app
