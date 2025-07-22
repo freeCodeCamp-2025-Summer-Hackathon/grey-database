@@ -1,5 +1,4 @@
 from flask import Blueprint, request, session
-from markupsafe import escape
 from jobapp.models import User, Application
 
 bp = Blueprint('Application', __name__)
@@ -227,4 +226,95 @@ def user_applications():
 
     return {'message': 'Applications found', 'applications': serialized_apps}, 200
 
-     
+@bp.route("/<string:id>", methods=['PATCH'])
+def edit_application(id):
+    """
+    API to update a job application by ID
+    ---
+    tags:
+      - Applications
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: ID of the application to update
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              description: New name of the application
+    responses:
+      200:
+        description: Application updated successfully
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Application updated successfully
+      400:
+        description: Invalid input
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: Data not valid
+      404:
+        description: Application not found
+    """
+    data = request.get_json()
+    application = Application.objects(id=id).first()
+    if not application:
+        return {'error': 'Application not found'}, 404
+
+    if not data or not data.get("name"):
+        return {'error': 'Data not valid'}, 400
+
+    application.name = data["name"]
+    application.save()
+    return {'message': 'Application updated successfully'}, 200
+
+
+@bp.route("/<string:id>", methods=['DELETE'])
+def delete_application(id):
+    """
+    API to delete a job application by ID
+    ---
+    tags:
+      - Applications
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: ID of the application to delete
+    responses:
+      200:
+        description: Application deleted successfully
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Application deleted successfully
+      404:
+        description: Application not found
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: Application not found
+    """
+    application = Application.objects(id=id).first()
+    if not application:
+        return {'error': 'Application not found'}, 404
+
+    application.delete()
+    return {'message': 'Application deleted successfully'}, 200
