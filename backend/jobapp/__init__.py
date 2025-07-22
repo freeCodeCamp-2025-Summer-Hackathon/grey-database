@@ -29,8 +29,10 @@ def create_app():
     from .API import main
     from .API import auth
     from .API import application
+    from .API import note
 
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
     app.register_blueprint(application.bp, url_prefix="/application")
+    app.register_blueprint(note.bp, url_prefix='/application')
     return app
