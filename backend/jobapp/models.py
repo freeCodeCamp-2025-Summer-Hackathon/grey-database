@@ -45,3 +45,4 @@ class Application(Document):
     notes = ListField(EmbeddedDocumentField(Note))
     contacts = ListField(EmbeddedDocumentField(Contact))
     followups = ListField(EmbeddedDocumentField(Followup))
+    resume = FileField()

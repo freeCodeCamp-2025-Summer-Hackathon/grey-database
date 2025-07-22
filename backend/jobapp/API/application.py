@@ -1,9 +1,12 @@
-from flask import Blueprint, request, session
+import io
+
+from flask import Blueprint, request, send_file
 from jobapp.models import User, Application
 
-bp = Blueprint('Application', __name__)
+bp = Blueprint("Application", __name__)
 
-@bp.route("/create", methods=['POST'])
+
+@bp.route("/create", methods=["POST"])
 def create_application():
     """
     API to create a new job application for a user
@@ -54,23 +57,27 @@ def create_application():
     try:
         data = request.get_json()
         if not data or not data.get("userid") or not data.get("name"):
-            return {'error': 'Data not valid'}, 400
+            return {"error": "Data not valid"}, 400
 
         user = User.objects(id=data["userid"]).first()
         if not user:
-            return {'error': 'User does not exist'}, 400
+            return {"error": "User does not exist"}, 400
 
         application = Application(userid=user, name=data["name"])
         application.save()
 
-        return {'message': 'Application created successfully', 'id': str(application.id)}, 201
+        return {
+            "message": "Application created successfully",
+            "id": str(application.id),
+        }, 201
 
     except Exception as e:
         # Optionally log the error
         print("Error:", e)
-        return {'error': 'Internal server error'}, 500
+        return {"error": "Internal server error"}, 500
 
-@bp.route("/<string:id>", methods=['GET'])
+
+@bp.route("/<string:id>", methods=["GET"])
 def get_application(id):
     """
     API to retrieve a job application by ID
@@ -121,25 +128,25 @@ def get_application(id):
     """
     application = Application.objects(id=id).first()
     if not application:
-        return {'error': 'Application not found'}, 404
+        return {"error": "Application not found"}, 404
 
     return {
-        'message': 'Application found',
-        'id': str(application.id),
-        'name': application.name,
-        'userid': str(application.userid.id),
-        'notes': [
+        "message": "Application found",
+        "id": str(application.id),
+        "name": application.name,
+        "userid": str(application.userid.id),
+        "notes": [
             {
-                'note': note.note,
-                'added': note.added.isoformat(),
-                'status': note.status.value
+                "note": note.note,
+                "added": note.added.isoformat(),
+                "status": note.status.value,
             }
             for note in application.notes
-        ]
+        ],
     }, 200
 
-    
-@bp.route("/user-applications", methods=['POST'])
+
+@bp.route("/user-applications", methods=["POST"])
 def user_applications():
     """
     API to fetch all job applications for a specific user
@@ -204,29 +211,32 @@ def user_applications():
     """
     data = request.get_json()
     if not data or not data.get("userid"):
-        return {'error': 'Data not valid'}, 400
+        return {"error": "Data not valid"}, 400
 
     applications = Application.objects(userid=data.get("userid")).all()
 
     serialized_apps = []
     for app in applications:
-        serialized_apps.append({
-            'id': str(app.id),
-            'name': app.name,
-            'userid': str(app.userid.id),
-            'notes': [
-                {
-                    'note': note.note,
-                    'added': note.added.isoformat(),
-                    'status': note.status.value
-                }
-                for note in app.notes
-            ]
-        })
+        serialized_apps.append(
+            {
+                "id": str(app.id),
+                "name": app.name,
+                "userid": str(app.userid.id),
+                "notes": [
+                    {
+                        "note": note.note,
+                        "added": note.added.isoformat(),
+                        "status": note.status.value,
+                    }
+                    for note in app.notes
+                ],
+            }
+        )
 
-    return {'message': 'Applications found', 'applications': serialized_apps}, 200
+    return {"message": "Applications found", "applications": serialized_apps}, 200
 
-@bp.route("/<string:id>", methods=['PATCH'])
+
+@bp.route("/<string:id>", methods=["PATCH"])
 def edit_application(id):
     """
     API to update a job application by ID
@@ -271,17 +281,17 @@ def edit_application(id):
     data = request.get_json()
     application = Application.objects(id=id).first()
     if not application:
-        return {'error': 'Application not found'}, 404
+        return {"error": "Application not found"}, 404
 
     if not data or not data.get("name"):
-        return {'error': 'Data not valid'}, 400
+        return {"error": "Data not valid"}, 400
 
     application.name = data["name"]
     application.save()
-    return {'message': 'Application updated successfully'}, 200
+    return {"message": "Application updated successfully"}, 200
 
 
-@bp.route("/<string:id>", methods=['DELETE'])
+@bp.route("/<string:id>", methods=["DELETE"])
 def delete_application(id):
     """
     API to delete a job application by ID
@@ -314,7 +324,120 @@ def delete_application(id):
     """
     application = Application.objects(id=id).first()
     if not application:
-        return {'error': 'Application not found'}, 404
+        return {"error": "Application not found"}, 404
 
     application.delete()
-    return {'message': 'Application deleted successfully'}, 200
+    return {"message": "Application deleted successfully"}, 200
+
+
+@bp.route("/<string:id>/resume", methods=["POST"])
+def upload_resume(id):
+    """
+    API to upload a resume file for an application
+    ---
+    tags:
+      - Applications
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: Application ID
+      - name: file
+        in: formData
+        type: file
+        required: true
+        description: Resume file to upload
+    responses:
+      200:
+        description: Resume uploaded successfully
+      400:
+        description: Invalid input or file missing
+      404:
+        description: Application not found
+    """
+    application = Application.objects(id=id).first()
+    if not application:
+        return {"error": "Application not found"}, 404
+
+    if "file" not in request.files:
+        return {"error": "No file part"}, 400
+
+    file = request.files["file"]
+    if file.filename == "":
+        return {"error": "No selected file"}, 400
+
+    application.resume.put(file, filename=file.filename, content_type=file.content_type)
+    application.save()
+    return {"message": "Resume uploaded successfully"}, 200
+
+
+@bp.route("/<string:id>/resume", methods=["GET"])
+def download_resume(id):
+    """
+    API to download the resume file for an application
+    ---
+    tags:
+      - Applications
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: Application ID
+    produces:
+      - application/octet-stream
+    responses:
+      200:
+        description: Resume file
+        schema:
+          type: file
+      404:
+        description: Application or resume not found
+    """
+    application = Application.objects(id=id).first()
+    if not application:
+        return {"error": "Application not found"}, 404
+
+    if not application.resume or not application.resume.grid_id:
+        return {"error": "Resume not found"}, 404
+
+    return send_file(
+        io.BytesIO(application.resume.read()),
+        mimetype=application.resume.content_type,
+        download_name=application.resume.filename,
+        as_attachment=True,
+    )
+
+
+@bp.route("/<string:id>/resume", methods=["DELETE"])
+def delete_resume(id):
+    """
+    API to delete a resume file from an application
+    ---
+    tags:
+      - Applications
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: Application ID
+    responses:
+      200:
+        description: Resume deleted successfully
+      404:
+        description: Application not found or resume not found
+    """
+    application = Application.objects(id=id).first()
+    if not application:
+        return {"error": "Application not found"}, 404
+
+    if not application.resume:
+        return {"error": "Resume not found"}, 404
+
+    application.resume.delete()
+    application.save()
+    return {"message": "Resume deleted successfully"}, 200
