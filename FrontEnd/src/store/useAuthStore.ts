@@ -46,6 +46,7 @@ const useAuthStore = create<AuthStore>((set) => ({
         );
 
         if (res.status === 200) {
+            Cookies.set("username",username);
             toast.success(res.data.message || "Login successful");
             set({ loggedIn: true });
         } else if (res.status === 401) {
