@@ -31,9 +31,9 @@ Here's where you can go to town on how you actually built this thing. Write as m
 `cd backend`
 
 2. *OPTIONAL*: Create and activate a virtual environment  
-`python -m venv venv`  
-`venv\Scripts\activate` (on Windows)  
-`source venv/bin/activate` (on Linux/Mac)
+`python -m .venv .venv`  
+`.\.venv\Scripts\activate` (on Windows)  
+`source .venv/bin/activate` (on Linux/Mac)
 
 3. Install dependencies  
 `pip install -r requirements.txt`
@@ -41,7 +41,7 @@ Here's where you can go to town on how you actually built this thing. Write as m
 4. Run the backend server  
 `python app.py`
 
-If you encounter issues starting the backend, ensure any required environment variables (e.g., `FLASK_ENV=development`) are set. You may also try running:  `flask run`
+If you encounter issues starting the backend, ensure any required environment variables (e.g., `FLASK_ENV=dev`) are set. You may also try running:  `flask run`
 
 
 ### Frontend Setup
