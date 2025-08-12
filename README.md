@@ -8,9 +8,20 @@ A job-hunting journal for tracking applications and interviews.
 
 ## How It's Made:
 
-**Tech used:** React, Python, Flask, MongoDB.
+**Tech used:** React, Python, Flask, MongoDB, Zustand, Typescript
 
 Here's where you can go to town on how you actually built this thing. Write as much as you can here, it's totally fine if it's not too much just make sure you write *something*. If you don't have too much experience on your resume working on the front end that's totally fine. This is where you can really show off your passion and make up for that ten fold.
+
+## How to run the project?
+
+#### For backend
+- navigate to `backend` folder.
+- then for creating and activiating virtual environment run this : 
+```bash
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+- Then install the required dependencies : `pip install -r requirements.txt`
 
 ## How To Get Up And Running:
 
