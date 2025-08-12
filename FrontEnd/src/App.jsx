@@ -34,6 +34,21 @@ function App() {
           path="*"
           element={<Navigate to={loggedIn ? "/dashboard" : "/login"} />}
         />
+
+           <Route
+        path="/resume"
+        element={
+          loggedIn ? (
+            <>
+            <Header />
+            <div>Resume Page</div>
+            </>
+          ) : (
+            <Navigate to="/login" />
+          )
+        } 
+        />
+        
       </Routes>
     </BrowserRouter>
     <Toaster position="top-right"></Toaster>
