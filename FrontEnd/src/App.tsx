@@ -1,9 +1,9 @@
 import React from "react";
-import Login from "../src/components/Login/Login.jsx";
+import Login from "./components/Login/Login.js";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Header from "./components/Header/Header";
-import Dashboard from "./components/Dashboard/Dashboard";
+import Header from "./components/Header/Header.js";
+import Dashboard from "./components/Dashboard/Dashboard.js";
 import useAuthStore from "./store/useAuthStore.js";
 
 function App() {
