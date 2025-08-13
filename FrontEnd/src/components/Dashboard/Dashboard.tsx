@@ -1,9 +1,9 @@
 const Dashboard = () => {
-    return (
-        <>
-        <div>Welcome to WorkWave</div>
-        </>
-    )
-}
+  return (
+    <>
+      <div>Welcome to WorkWave</div>
+    </>
+  );
+};
 
 export default Dashboard;
